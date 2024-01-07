@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +11,8 @@ function ConsentResponse() {
   const token = localStorage.getItem('authToken')
   const navigate = useNavigate();
   const headers = { Authorization: `Bearer ${token}` };
+  const id=localStorage.getItem('id');
+  
   //const id = localStorage.getItem('id');
 
   const [requests, setRequests] = useState([]);
@@ -22,7 +22,9 @@ function ConsentResponse() {
       navigate("/");
     }
     else {
-      axios.get("http://localhost:9092/patient/view-consent/123412341234").then((response) => {
+
+      axios.get(`http://localhost:8765/consent/view-consent/${id}`,{ headers }).then((response) => {
+
         setRequests(response.data);
         setDeclinedRequests(Array(response.data.length).fill(false));
       });
@@ -48,9 +50,9 @@ function ConsentResponse() {
     if (cid) {
       axios
         .post(
-          "http://localhost:9092/patient/login/consentManager/responseConsent/" +
+          "http://localhost:8765/consent/update-status/" +
           cid,
-          resp
+          resp,{headers}
         )
         .then((response) => {
           console.log(response);
@@ -79,16 +81,16 @@ function ConsentResponse() {
       status: "APPROVED",
     };
     const cid = requests[index].consentId;
-    console.log("cid");
-    console.log(requests);
-    console.log(requests[index].consentId);
+    // console.log("cid");
+    // console.log(requests);
+    // console.log(requests[index].consentId);
 
     if (cid) {
       axios
         .post(
-          "http://localhost:9092/patient/login/consentManager/responseConsent/" +
+          "http://localhost:8765/consent/update-status/" +
           cid,
-          resp
+          resp, {headers}
         )
         .then((response) => {
           console.log(response);

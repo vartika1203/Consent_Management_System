@@ -1,7 +1,5 @@
 import React from 'react'
 import Table from 'react-bootstrap/Table'
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,18 +17,18 @@ function ViewRecords() {
       const token = localStorage.getItem('authToken'); // get token from localStorage
       const id = localStorage.getItem('id');
       const headers = { Authorization: `Bearer ${token}` }; // add token to headers
-   
+
       if (token === null) {
         navigate("/");
       }
       else{
-        const { data } = await axios.get(`http://localhost:9099/hospital/record-mapping/${id}`, { headers });
+        const { data } = await axios.get(`http://localhost:8765/records/medical-records/${id}`, { headers });
         console.log(data);
-        setRecords(data); 
+        setRecords(data);
       }
-     
+
     };
-  
+
     fetchRecord();
   }, []);
 
@@ -48,10 +46,9 @@ function ViewRecords() {
           <tr className='tablehead'>
             <th className='tabledata'>Record Id</th>
             <th className='tabledata'>Disease Name</th>
-            <th className='tabledata'>Patient Aadhar</th>
             <th className='tabledata'>Priescription</th>
-            <th className='tabledata'>Hospital Id</th>
-            <th className='tabledata'>Practitioners Aadhar</th>
+            <th className='tabledata'>Hospital Name</th>
+            <th className='tabledata'>Practitioners Name</th>
 
           </tr>
         </thead>
@@ -60,10 +57,9 @@ function ViewRecords() {
             <tr key={record.id}>
               <td className='tabledata'>{record.recordId}</td>
               <td className='tabledata'>{record.diseaseName}</td>
-              <td className='tabledata'>{record.patientAadhar}</td>
               <td className='tabledata'>{record.record}</td>
-              <td className='tabledata'>{record.centralHospital.hospitalId}</td>
-              <td className='tabledata'>{record.medicalPractitioner.practitionerAadhar}</td>
+              <td className='tabledata'>{record.centralHospital.hospitalName}</td>
+              <td className='tabledata'>{record.medicalPractitioner.fname} {record.medicalPractitioner.mname} {record.medicalPractitioner.lname}</td>
             </tr>
           ))}
         </tbody>

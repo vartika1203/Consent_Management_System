@@ -7,6 +7,11 @@ import { useNavigate } from 'react-router-dom';
 
 
 function ApprovedRecords() {
+
+  const token = localStorage.getItem('authToken');
+  const id = localStorage.getItem('id');
+  const headers = { Authorization: `Bearer ${token}` };
+
   const navigate = useNavigate();
 
   const [records, setRecords] = useState([]);
@@ -14,15 +19,13 @@ function ApprovedRecords() {
 
   useEffect(() => {
     const fetchRecord = async () => {
+
       
-      const token = localStorage.getItem('authToken');
-      const id = localStorage.getItem('id');
-      const headers = { Authorization: `Bearer ${token}` };
-      if(token===null){
+      if (token === null) {
         navigate("/");
       }
-      else{
-        const { data } = await axios.get(`http://localhost:9099/hospital/record-mapping/${id}`, { headers });
+      else {
+        const { data } = await axios.get(`http://localhost:8765/records/medical-records/${id}`, { headers });
         console.log(data);
         setRecords(data);
       }
@@ -72,19 +75,19 @@ function ApprovedRecords() {
 
     try {
       const response = await axios.post(
-        'http://localhost:9092/hospital/consent/approve-records',
+        'http://localhost:8765/consent/approved-records',
         JSON.stringify(selectedRecords), // Serialize the data as a JSON array
-        { headers: { 'Content-Type': 'application/json' } } // Set the content type to application/json
+        { headers: { 'Content-Type': 'application/json' , ...headers} } // Set the content type to application/json
       );
       console.log("hello");
- 
+
     } catch (error) {
       console.error(error);
     }
     console.log('Selected records:', selectedRecords);
-    
 
-      navigate(`/ConsentResponse.js`);
+
+    navigate(`/ConsentResponse.js`);
 
   };
 
@@ -99,10 +102,9 @@ function ApprovedRecords() {
             <tr className='tablehead'>
               <th className='tabledata'>Record Id</th>
               <th className='tabledata'>Disease Name</th>
-              <th className='tabledata'>Patient Aadhar</th>
               <th className='tabledata'>Priescription</th>
-              <th className='tabledata'>Hospital Id</th>
-              <th className='tabledata'>Practitioners Aadhar</th>
+              <th className='tabledata'>Hospital Name</th>
+              <th className='tabledata'>Practitioners Name</th>
               <th className='tabledata'>Select</th>
             </tr>
           </thead>
@@ -111,10 +113,9 @@ function ApprovedRecords() {
               <tr key={record.id}>
                 <td className='tabledata'>{record.recordId}</td>
                 <td className='tabledata'>{record.diseaseName}</td>
-                <td className='tabledata'>{record.patientAadhar}</td>
                 <td className='tabledata'>{record.record}</td>
-                <td className='tabledata'>{record.centralHospital.hospitalId}</td>
-                <td className='tabledata'>{record.medicalPractitioner.practitionerAadhar}</td>
+                <td className='tabledata'>{record.centralHospital.hospitalName}</td>
+                <td className='tabledata'>{record.medicalPractitioner.fname} {record.medicalPractitioner.mname} {record.medicalPractitioner.lname}</td>
                 <td className='tabledata'>
                   <Form.Check
                     aria-label="Select record"
